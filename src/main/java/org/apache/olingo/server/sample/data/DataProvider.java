@@ -18,6 +18,7 @@
  */
 package org.apache.olingo.server.sample.data;
 
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -45,6 +46,9 @@ import org.apache.olingo.commons.api.edm.EdmProperty;
 import org.apache.olingo.server.api.uri.UriParameter;
 import org.apache.olingo.server.sample.edmprovider.CarsEdmProvider;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 public class DataProvider {
 
   private final Map<String, EntityCollection> data;
@@ -64,7 +68,7 @@ public class DataProvider {
   public Entity read(final EdmEntitySet edmEntitySet, final List<UriParameter> keys) throws DataProviderException {
 	httpGet(GET, "Cars", "");
 	final EdmEntityType entityType = edmEntitySet.getEntityType();
-    final EntityCollection entitySet = data.get(edmEntitySet.getName());
+    final EntityCollection entitySet = httpGet(GET, "Cars", "");
     if (entitySet == null) {
       return null;
     } else {
@@ -88,6 +92,7 @@ public class DataProvider {
         }
         return null;
       } catch (final EdmPrimitiveTypeException e) {
+    	  e.printStackTrace();
         throw new DataProviderException("Wrong key!", e);
       }
     }
@@ -203,9 +208,11 @@ public class DataProvider {
     }
   }
   
-  private void httpGet(String verbo, String endpoint, String data) {
+  private EntityCollection httpGet(String verbo, String endpoint, String data) {
 	  HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
 	  HttpResponse response = null;
+	  EntityCollection entitySet = new EntityCollection();
+	    
 	  try {  
 	      if(verbo.equals(POST)) {
 	    	  HttpPost request = new HttpPost("http://localhost:3005/"+endpoint);
@@ -225,7 +232,20 @@ public class DataProvider {
 	      String responseString = new BasicResponseHandler().handleResponse(response);
 	      System.out.println(responseString);
 	      System.out.println(response);
-	     
+	      Gson gson = new Gson();
+	      Response respuesta = gson.fromJson(responseString, Response.class);
+	      for(Cars car : respuesta.getValue()) {
+	    	    System.out.println(car);
+	    	    Entity el = new Entity()
+	    		        .addProperty(createPrimitive("Id", car.getIdentificador()))
+	    		        .addProperty(createPrimitive("Model", car.getModel()))
+	    		        .addProperty(createPrimitive("ModelYear", car.getModelYear()))
+	    		        .addProperty(createPrimitive("Price", car.getPrice()))
+	    		        .addProperty(createPrimitive("Currency", car.getCurrency()));
+	    	    el.setId(createId(CarsEdmProvider.ES_CARS_NAME, car.getIdentificador()));
+
+	    	    entitySet.getEntities().add(el);
+	    	}
 	      //handle response here...
 
 	  }catch (Exception ex) {
@@ -236,5 +256,6 @@ public class DataProvider {
 	      //Deprecated
 	      //httpClient.getConnectionManager().shutdown(); 
 	  }
+	  return entitySet;
   }
 }
