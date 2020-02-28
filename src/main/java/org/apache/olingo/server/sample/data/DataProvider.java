@@ -215,7 +215,7 @@ public class DataProvider {
 	    
 	  try {  
 	      if(verbo.equals(POST)) {
-	    	  HttpPost request = new HttpPost("http://localhost:3005/"+endpoint);
+	    	  HttpPost request = new HttpPost("http://web:3005/"+endpoint);
 	    	  request.addHeader("content-type", "application/json");
 		      request.setEntity( new StringEntity(data) );
 		      response = httpClient.execute(request);
@@ -223,7 +223,7 @@ public class DataProvider {
 	      }
 	    	  
 	      if(verbo.equals(GET)) {
-	    	  HttpGet request = new HttpGet("http://localhost:3005/"+endpoint);
+	    	  HttpGet request = new HttpGet("http://web:3005/"+endpoint);
 	    	  request.addHeader("content-type", "application/json");
 	    	  response = httpClient.execute(request);
 		      System.out.println(response);

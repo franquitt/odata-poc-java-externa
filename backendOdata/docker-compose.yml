@@ -1,5 +1,15 @@
 version: "2"
 services:
+  server-java:
+    container_name: odatajavaservice-external
+    image: tomcat:jdk8-adoptopenjdk-openj9
+    volumes:
+    - ./webapps:/usr/local/tomcat/webapps/
+    depends_on:
+    - web
+    ports:
+    - "8080:8080"
+    command: bash catalina.sh run
   web:
     build: .
     ports:
