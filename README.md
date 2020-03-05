@@ -10,6 +10,7 @@ Solamente esta implementada de esta forma la vista de detalle individual del set
 - Java
 - Express
 - Olingo
+- MongoDB
 
 
 ## Configuración inicial
@@ -24,7 +25,7 @@ Se puede levantar el mismo estando situado en la carpeta *backendOdata* con
     docker-compose up
 
 Y podemos probar el binding desde la siguiente url:
-[http://localhost:8080/server/cars.svc/Cars(2)?\$format=json](http://localhost:8080/server/cars.svc/Cars(1)?$format=json)
+[http://localhost:8080/server/cars.svc/Cars(1)?\$format=json](http://localhost:8080/server/cars.svc/Cars(1)?$format=json)
     
 ## Referencias
 - [Olingo Java V4](http://olingo.apache.org/doc/odata4/index.html)
